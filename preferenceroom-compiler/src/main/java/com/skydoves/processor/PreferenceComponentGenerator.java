@@ -16,7 +16,6 @@
 
 package com.skydoves.processor;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.common.base.VerifyException;
@@ -87,7 +86,7 @@ public class PreferenceComponentGenerator {
     private MethodSpec getConstructorSpec() {
         MethodSpec.Builder builder = MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
-                .addParameter(ParameterSpec.builder(Context.class, CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build());
+                .addParameter(ParameterSpec.builder(ClassName.get("android.content", "Context"), CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build());
 
         this.annotatedClazz.keyNames.forEach(keyName ->
             builder.addStatement("$N = $N.getInstance($N.getApplicationContext())", getEntityInstanceFieldName(keyName), getEntityClazzName(annotatedEntityMap.get(keyName)), CONSTRUCTOR_CONTEXT));
@@ -98,7 +97,7 @@ public class PreferenceComponentGenerator {
     private MethodSpec getInitializeSpec() {
         return MethodSpec.methodBuilder("init")
                 .addModifiers(PUBLIC, STATIC)
-                .addParameter(ParameterSpec.builder(Context.class, CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
+                .addParameter(ParameterSpec.builder(ClassName.get("android.content", "Context"), CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
                 .addStatement("if($N != null) return $N", FIELD_INSTANCE, FIELD_INSTANCE)
                 .addStatement("$N = new $N($N)", FIELD_INSTANCE, getClazzName(), CONSTRUCTOR_CONTEXT)
                 .addStatement("return $N", FIELD_INSTANCE)

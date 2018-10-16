@@ -16,9 +16,6 @@
 
 package com.skydoves.processor;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.squareup.javapoet.ClassName;
@@ -77,7 +74,7 @@ public class PreferenceEntityGenerator {
 
     private List<FieldSpec> getFieldSpecs() {
         List<FieldSpec> fieldSpecs = new ArrayList<>();
-        fieldSpecs.add(FieldSpec.builder(SharedPreferences.class, FIELD_PREFERENCE, PRIVATE, FINAL).build());
+        fieldSpecs.add(FieldSpec.builder(ClassName.get("android.content", "SharedPreferences"), FIELD_PREFERENCE, PRIVATE, FINAL).build());
         fieldSpecs.add(FieldSpec.builder(getClassType(), FIELD_INSTANCE, PRIVATE, STATIC).build());
         return fieldSpecs;
     }
@@ -85,7 +82,7 @@ public class PreferenceEntityGenerator {
     private MethodSpec getConstructorSpec() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
-                .addParameter(ParameterSpec.builder(Context.class, CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
+                .addParameter(ParameterSpec.builder(ClassName.get("android.content", "Context"), CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
                 .addStatement("$N = $N.getSharedPreferences($S, Context.MODE_PRIVATE)", FIELD_PREFERENCE, CONSTRUCTOR_CONTEXT, annotatedClazz.entityName)
                 .build();
     }
@@ -93,15 +90,15 @@ public class PreferenceEntityGenerator {
     private MethodSpec getDefaultPreferenceConstructorSpec() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
-                .addParameter(ParameterSpec.builder(Context.class, CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
-                .addStatement("$N = $T.getDefaultSharedPreferences($N)", FIELD_PREFERENCE, PreferenceManager.class ,CONSTRUCTOR_CONTEXT)
+                .addParameter(ParameterSpec.builder(ClassName.get("android.content", "Context"), CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
+                .addStatement("$N = $T.getDefaultSharedPreferences($N)", FIELD_PREFERENCE, ClassName.get("android.preference", "PreferenceManager") ,CONSTRUCTOR_CONTEXT)
                 .build();
     }
 
     private MethodSpec getInstanceSpec() {
         return MethodSpec.methodBuilder("getInstance")
                 .addModifiers(PUBLIC, STATIC)
-                .addParameter(ParameterSpec.builder(Context.class, CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
+                .addParameter(ParameterSpec.builder(ClassName.get("android.content", "Context"), CONSTRUCTOR_CONTEXT).addAnnotation(NonNull.class).build())
                 .addStatement("if($N != null) return $N", FIELD_INSTANCE, FIELD_INSTANCE)
                 .addStatement("$N = new $N($N)", FIELD_INSTANCE, getClazzName(), CONSTRUCTOR_CONTEXT)
                 .addStatement("return $N", FIELD_INSTANCE)
